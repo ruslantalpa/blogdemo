@@ -1,0 +1,11 @@
+.commentForm textarea {
+  display: block;
+  width: 500px;
+  height: 200px;
+  margin-bottom: 10px;
+}
+
+.commentForm input[type="text"] {
+  width: 500px;
+  margin-bottom: 10px;
+}

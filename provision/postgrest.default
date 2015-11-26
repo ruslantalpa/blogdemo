@@ -1,0 +1,35 @@
+# run service as
+#POSTGREST_USER=postgrest
+
+# log file
+#POSTGREST_LOG=/var/log/postgrest/postgrest.log
+
+# database host
+#POSTGREST_DBHOST=localhost
+
+# database host
+#POSTGREST_DBPORT=5432
+
+# database to use
+POSTGREST_DBNAME=blogdemo
+
+# database user
+POSTGREST_DBUSER=authenticator
+
+# database password
+POSTGREST_DBPASS=authenticator
+
+# anonymouse user
+POSTGREST_ANON=anon
+
+# database pool
+#POSTGREST_POOL=10
+
+# jwt secret
+POSTGREST_JWT_SECRET=mysecret
+
+# default schema
+#POSTGREST_SCHEMA=public
+
+# secure (use 1 to enable, empty string to disable)
+#POSTGREST_SECURE=
