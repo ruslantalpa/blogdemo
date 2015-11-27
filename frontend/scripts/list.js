@@ -1,13 +1,13 @@
 
 
-var ArticlesBox = React.createClass({
+var PostsBox = React.createClass({
   loadCommentsFromServer: function() {
     var headers = {};
     if(localStorage.session){
       headers["Authorization"] = 'Bearer ' + localStorage.session
     }
     $.ajax({
-      url: this.props.url,
+      url: '/api/posts',
       dataType: 'json',
       cache: true,
       headers: headers,
@@ -15,7 +15,7 @@ var ArticlesBox = React.createClass({
         this.setState({data: data});
       }.bind(this),
       error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
+        console.error(status, err.toString());
       }.bind(this)
     });
   },
@@ -28,34 +28,34 @@ var ArticlesBox = React.createClass({
   render: function() {
     return (
       <div>
-        <h3>Articles</h3>
-        <ArticlesList data={this.state.data} />
+        <h3>Posts</h3>
+        <PostsList data={this.state.data} />
       </div>
     );
   }
 });
 
-var ArticlesList = React.createClass({
+var PostsList = React.createClass({
   render: function() {
-    var articleNodes = this.props.data.map(function(article) {
+    var postNodes = this.props.data.map(function(post) {
       return (
-        <Article article={article}  key={article.id} />
+        <Post post={post}  key={post.id} />
       );
     });
     return (
       <div>
-        {articleNodes}
+        {postNodes}
       </div>
     );
   }
 });
 
-var Article = React.createClass({
+var Post = React.createClass({
   render: function() {
     return (
       <div>
-        <h1><a href={'article.html?articleId=' + this.props.article.id}>{this.props.article.title}</a></h1>
-        <h3>by {this.props.article.author} on {this.props.article.created_at}</h3>
+        <h1><a href={'/post/' + this.props.post.id}>{this.props.post.title}</a></h1>
+        <h3>by {this.props.post.author} on {this.props.post.created_at}</h3>
       </div>
     );
   }
@@ -63,10 +63,9 @@ var Article = React.createClass({
 
 var Page = React.createClass({
   render: function() {
-    var articlesUrl = '/api/posts';
     return (
       <div>
-      <ArticlesBox url={articlesUrl} />
+      <PostsBox />
       </div>
     );
   }

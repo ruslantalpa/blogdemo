@@ -5,7 +5,7 @@ vagrant up
 
 after that try the folowing urls
 ```
-http://localhost:8000/login.html
-http://localhost:8000/list.html
-http://localhost:8000/article.html?articleId=1
+http://localhost:8000/
+http://localhost:8000/post/1
+http://localhost:8000/login
 ```
