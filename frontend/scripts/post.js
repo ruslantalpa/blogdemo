@@ -25,7 +25,7 @@ var CommentBox = React.createClass({
       commentForm = <CommentForm onCommentSubmit={this.props.handleCommentSubmit} />
     }
     else{
-      commentForm = <a href="login.html">Login to comment</a>;
+      commentForm = <a href="/login.html">Login to comment</a>;
     }
     return (
       <div className="commentBox">
