@@ -1,5 +1,4 @@
-# blogdemo
-PostgREST blog demo
+#PostgREST blog demo
 
 vagrant up
 
