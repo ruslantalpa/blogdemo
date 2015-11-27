@@ -17,6 +17,9 @@ chown vagrant.vagrant $INSTALL_DIR
 echo "\n\nMISC ======================================"
 $SCRIPTS_DIR/misc.sh
 
+echo "\n\nBOWER ====================================="
+$SCRIPTS_DIR/bower.sh
+
 echo "\n\nPOSTGRESQL ================================"
 $SCRIPTS_DIR/postgresql.sh
 
