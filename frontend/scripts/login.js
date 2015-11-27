@@ -19,6 +19,7 @@ var LoginForm = React.createClass({
         if(data.token){
           localStorage.session = data.token;
         }
+        window.location = '/';
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(err.toString());
