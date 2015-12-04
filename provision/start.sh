@@ -30,5 +30,5 @@ $SCRIPTS_DIR/appdb.sh
 echo "\n\nPOSTGREST ================================="
 $SCRIPTS_DIR/postgrest.sh
 
-echo "\n\nBOWER ====================================="
-$SCRIPTS_DIR/bower.sh
+echo "\n\nNODE ====================================="
+$SCRIPTS_DIR/node.sh

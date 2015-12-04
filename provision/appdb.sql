@@ -12,7 +12,7 @@ begin;
 
 -- comment out the role creation statements if
 -- you want to run this script more than once
-create role anon noinherit;
+create role anon;
 create role author;
 create role authenticator with login password 'authenticator';
 
@@ -53,6 +53,7 @@ create table if not exists
 basic_auth.users (
   email    text primary key check ( email ~* '^.+@.+\..+$' ),
   pass     text not null check (length(pass) < 512),
+  name     text not null default '',
   role     name not null check (length(role) < 512),
   verified boolean not null default false
   -- If you like add more columns, or a json column
@@ -264,63 +265,13 @@ as $$
 $$ language sql;
 
 -------------------------------------------------------------------------------
--- User management
+-- User management (!!!! changed)
 
-create or replace view users as
-select actual.role as role,
-       '***'::text as pass,
+create or replace view authors as
+select
        actual.email as email,
-       actual.verified as verified
-from basic_auth.users as actual,
-     (select rolname
-        from pg_authid
-       where pg_has_role(current_user, oid, 'member')
-     ) as member_of
-where actual.role = member_of.rolname
-  and (
-    actual.role <> 'author'
-    or email = basic_auth.current_email()
-  );
-
-create or replace function
-update_users() returns trigger
-language plpgsql
-AS $$
-begin
-  if tg_op = 'INSERT' then
-    perform basic_auth.clearance_for_role(new.role);
-
-    insert into basic_auth.users
-      (role, pass, email, verified) values
-      (coalesce(new.role, 'author'), new.pass,
-        new.email, coalesce(new.verified, false));
-    return new;
-  elsif tg_op = 'UPDATE' then
-    -- no need to check clearance for old.role because
-    -- an ineligible row would not even available to update (http 404)
-    perform basic_auth.clearance_for_role(new.role);
-
-    update basic_auth.users set
-      email  = new.email,
-      role   = new.role,
-      pass   = new.pass,
-      verified = coalesce(new.verified, old.verified, false)
-      where email = old.email;
-    return new;
-  elsif tg_op = 'DELETE' then
-    -- no need to check clearance for old.role (see previous case)
-
-    delete from basic_auth.users
-     where basic_auth.email = old.email;
-    return null;
-  end if;
-end
-$$;
-
-drop trigger if exists update_users on users;
-create trigger update_users
-  instead of insert or update or delete on
-    users for each row execute procedure update_users();
+       actual.name as name
+from basic_auth.users as actual;
 
 -------------------------------------------------------------------------------
 -- Blogging stuff!
@@ -350,7 +301,7 @@ comments (
 -- Permissions
 
 grant insert on table basic_auth.users, basic_auth.tokens to anon;
-grant select on table pg_authid, basic_auth.users, posts, comments to anon;
+grant select on table pg_authid, basic_auth.users, posts, comments, authors to anon;
 grant execute on function
   login(text,text),
   request_password_reset(text),
@@ -365,7 +316,9 @@ grant author to authenticator;
 grant select, insert, update, delete
   on basic_auth.tokens, basic_auth.users to anon, author;
 grant select, insert, update, delete
-  on table users, posts, comments to author;
+  on table posts, comments to author;
+grant select on table authors to author;
+
 grant usage, select on sequence posts_id_seq, comments_id_seq to author;
 
 grant usage on schema public, basic_auth to anon, author;
@@ -388,12 +341,16 @@ create policy authors_eigenedit on comments
 
 
 ------- Data
-insert into basic_auth.users (email,pass,role,verified) values
-('joe@begriffs.com','nelson','author','TRUE'); -- password = bbb
+insert into basic_auth.users (email,pass,name,role,verified) values
+('joe@begriffs.com','nelson', 'Joe Nelson', 'author','TRUE'),
+('ruslan.talpa@gmail.com','talpa', 'Ruslan Talpa', 'author','TRUE');
 
-insert into posts (title,body,author) values
-('Postgrest Intro', E'## Introduction\nPostgREST is a standalone web server that turns your database directly into a RESTful API. The structural constraints and permissions in the database determine the API endpoints and operations.\nThis guide explains how to install the software and provides practical examples of its use. You''ll learn how to build a fast, versioned, secure API and how to deploy it to production.\nThe project has a friendly and growing community.', 'joe@begriffs.com');
+insert into posts (title,author,body) values
+('Postgrest Intro', 'joe@begriffs.com', E'## Introduction\nPostgREST is a standalone web server that turns your database directly into a RESTful API. The structural constraints and permissions in the database determine the API endpoints and operations.\nThis guide explains how to install the software and provides practical examples of its use. You''ll learn how to build a fast, versioned, secure API and how to deploy it to production.\nThe project has a friendly and growing community.'),
+('Postgrest Intro again', 'ruslan.talpa@gmail.com', E'## Introduction\nPostgREST is a standalone web server that turns your database directly into a RESTful API. The structural constraints and permissions in the database determine the API endpoints and operations.\nThis guide explains how to install the software and provides practical examples of its use. You''ll learn how to build a fast, versioned, secure API and how to deploy it to production.\nThe project has a friendly and growing community.');
 
 insert into comments (body, author, post) values
-('Interesting project', 'joe@begriffs.com', 1);
+('Interesting project', 'joe@begriffs.com', 1),
+('Interesting project indeed', 'ruslan.talpa@gmail.com', 1),
+('Interesting project', 'joe@begriffs.com', 2);
 commit;
