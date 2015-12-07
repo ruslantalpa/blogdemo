@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-POSTGREST_VERSION="0.3.0.0"
+POSTGREST_VERSION="0.3.0.1"
 
 cd $INSTALL_DIR
 git clone https://github.com/begriffs/postgrest.git

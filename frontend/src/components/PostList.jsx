@@ -2,18 +2,21 @@ import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import {connect} from 'react-redux';
 import { Link } from 'react-router';
+import {fetchPostListIfNeeded} from '../actions'
 
 export const PostList =  React.createClass({
   mixins: [PureRenderMixin],
+  componentDidMount() {
+    this.props.fetchPostList()
+  },
   render: function() {
-    //console.log(this.props);
     return <div>
       {this.props.list.map(post =>
         <div className="blog-post" key={post.get('id')}>
-          <h3><Link to={`/post/${post.get('id')}`}>{post.get('title')}</Link> <small>3/6/2015</small> <small>by {post.get('users').get('name')}</small></h3>
+          <h3><Link to={`/post/${post.get('id')}`}>{post.get('title')}</Link> <small>{(new Date(post.get('created_at'))).toDateString()}</small> <small>by {post.get('authors').get('name')}</small></h3>
           <div className="callout">
             <ul className="menu simple">
-              <li><a href="#">Comments: {post.get('comments').size}</a></li>
+              <li>Comments: {post.get('comments').size}</li>
             </ul>
           </div>
         </div>
@@ -27,5 +30,9 @@ function mapStateToProps(state) {
     list: state.app.get('list')
   };
 }
-
-export const PostListContainer = connect(mapStateToProps)(PostList);
+function mapDispatchToProps(dispatch) {
+  return {
+    fetchPostList: () => dispatch(fetchPostListIfNeeded())
+  }
+}
+export const PostListContainer = connect(mapStateToProps, mapDispatchToProps)(PostList);

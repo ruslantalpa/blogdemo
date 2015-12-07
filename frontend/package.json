@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build:webpack": "NODE_ENV=production webpack --config webpack.config.prod.js",
-    "build": "npm run clean && npm run build:webpack",
+    "build": "npm run clean && npm run build:webpack && cp src/index.html dist/index.html",
     "start": "node devServer.js",
     "lint": "eslint src"
   },
@@ -31,12 +31,15 @@
   "dependencies": {
     "history": "^1.13.1",
     "immutable": "^3.7.5",
+    "isomorphic-fetch": "^2.2.0",
     "react": "^0.14.0",
     "react-addons-pure-render-mixin": "^0.14.3",
     "react-dom": "^0.14.0",
     "react-redux": "^4.0.0",
     "react-router": "^1.0.0-rc3",
     "redux": "^3.0.4",
-    "redux-router": "^1.0.0-beta5"
+    "redux-logger": "^2.1.1",
+    "redux-router": "^1.0.0-beta5",
+    "redux-thunk": "^1.0.0"
   }
 }
