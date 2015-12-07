@@ -6,3 +6,4 @@ npm install -g webpack webpack-dev-server rimraf
 cd $FRONTED_DIR
 npm install
 npm run build
+npm start > /var/log/webpack.log &
