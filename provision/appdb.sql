@@ -14,7 +14,9 @@ begin;
 -- you want to run this script more than once
 create role anon;
 create role author;
-create role authenticator with login password 'authenticator';
+--create role authenticator with login password 'authenticator';
+--superuser is needed untill the PR that fixes this is merged
+create role authenticator with SUPERUSER login password 'authenticator';  
 
 create extension if not exists pgcrypto;
 create extension if not exists "uuid-ossp";

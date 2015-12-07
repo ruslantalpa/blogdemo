@@ -1,15 +1,22 @@
-import React from 'react';
-import PureRenderMixin from 'react-addons-pure-render-mixin';
-import {connect} from 'react-redux';
+import React from 'react'
+import PureRenderMixin from 'react-addons-pure-render-mixin'
+import {connect} from 'react-redux'
+import {fetchPostIfNeeded} from '../actions'
 
 export const Post =  React.createClass({
   mixins: [PureRenderMixin],
+  componentDidMount() {
+    this.props.fetchPost(this.props.postId)
+  },
+  componentWillReceiveProps(nextProps) {
+    this.props.fetchPost(nextProps.postId)
+  },
   render: function() {
-  	let post = this.props.posts.get(this.props.postId);
+  	let post = this.props.posts.get(this.props.postId)
     return !post ? 
     	<div></div> :
 	    <div className="blog-post">
-			<h3>{post.get('title')} <small>3/6/2015</small></h3>
+			<h3>{post.get('title')} <small>{(new Date(post.get('created_at'))).toDateString()}</small> <small>by {post.get('authors').get('name')}</small></h3>
 			<img className="thumbnail" src="http://placehold.it/850x350" />
 			<p>{post.get('body')}</p>
 			<div>
@@ -17,7 +24,7 @@ export const Post =  React.createClass({
 				<ul className="comments simple">
 					{post.get('comments').map(comment =>
 						<li key={comment.get('id')}>
-							<h5><small>3/6/2015</small> <small>by {comment.get('users').get('name')}</small></h5>
+							<h5><small>{(new Date(comment.get('created_at'))).toDateString()}</small> <small>by {comment.get('authors').get('name')}</small></h5>
 							<p>{comment.get('body')}</p>
 						</li>
 					)}
@@ -41,5 +48,10 @@ function mapStateToProps(state) {
     postId: state.router.params.id
   };
 }
+function mapDispatchToProps(dispatch) {
+  return {
+    fetchPost: (postId) => dispatch(fetchPostIfNeeded(postId))
+  }
+}
 
-export const PostContainer = connect(mapStateToProps)(Post);
+export const PostContainer = connect(mapStateToProps, mapDispatchToProps)(Post);

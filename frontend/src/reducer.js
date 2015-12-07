@@ -1,16 +1,15 @@
-import {Map, List, fromJS} from 'immutable';
+import {fromJS} from 'immutable';
+const defaultState = fromJS({list:[], posts: [], postId:0});
 
-function setList(state, newList) {
-  let l = fromJS(newList);
-  return state.set('list', l);
+function setList(state, list) {
+  return state.set('list', list);
 }
 
-function addPost(state, newPost) {
-	let p = fromJS(newPost);
-	return state.setIn(['posts', p.get('id')], p);
+function addPost(state, post) {
+	return state.setIn(['posts', post.get('id')], post);
 }
 
-export default function(state = Map({list:List.of(), posts: List.of()}), action) {
+export default function(state = defaultState, action) {
   switch (action.type) {
   case 'SET_LIST':
     return setList(state, action.list);

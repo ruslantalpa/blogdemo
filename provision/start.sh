@@ -1,6 +1,7 @@
 #!/bin/sh -e
 
 export APP_DIR="/vagrant"
+export FRONTED_DIR="/vagrant/frontend"
 export SCRIPTS_DIR="/vagrant/provision"
 export INSTALL_DIR="/home/vagrant/.install"
 
