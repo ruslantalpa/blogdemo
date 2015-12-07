@@ -3,29 +3,16 @@ import fetch from 'isomorphic-fetch'
 
 export const SET_LIST = 'SET_LIST'
 export const ADD_POST = 'ADD_POST'
-export const REQUEST_POST_LIST = 'REQUEST_POST_LIST'
-export const REQUEST_POST = 'REQUEST_POST'
+export const FETCH_POST_LIST = 'FETCH_POST_LIST'
+export const FETCH_POST = 'FETCH_POST'
 
 
-
-
-function requestPostList() {
-  return {
-    type: REQUEST_POST_LIST
-  }
-}
-function requestPost(postId) {
-  return {
-    type: REQUEST_POST,
-    postId
-  }
+function setList(list) {
+  return { type: SET_LIST, list: fromJS(list) }
 }
 
-function receivePostList(json) {
-  return setList(json);
-}
-function receivePost(json) {
-  return addPost(json);
+function addPost(post) {
+  return { type: ADD_POST, post: fromJS(post) }
 }
 
 function shouldFetchPost(state, postId) {
@@ -48,30 +35,26 @@ function shouldFetchPostList(state) {
   }
 }
 
-
-function setList(list) {
-  return { type: SET_LIST, list: fromJS(list) }
-}
-
-function addPost(post) {
-	return { type: ADD_POST, post: fromJS(post) }
-}
-
-
 function fetchPostList() {
   return dispatch => {
-    dispatch(requestPostList());
+    dispatch({
+      type: FETCH_POST_LIST
+    })
     return fetch(`http://localhost:8000/api/posts?select=id,title,created_at,authors{email,name},comments{id}`)
       .then(response => response.json())
       .then(json => {
-        	dispatch(receivePostList(json))
+        	dispatch(setList(json))
     	}
       )
   }
 }
+
 function fetchPost(postId) {
   return dispatch => {
-    dispatch(requestPost(postId));
+    dispatch({
+      type: FETCH_POST_LIST,
+      postId
+    })
     return fetch(
     	`http://localhost:8000/api/posts/${postId}?select=*,authors{*},comments{id,body,created_at,authors{email,name}}`,
     	{
@@ -82,12 +65,11 @@ function fetchPost(postId) {
     )
       .then(response => response.json())
       .then(json => {
-        	dispatch(receivePost(json))
+        	dispatch(addPost(json))
     	}
       )
   }
 }
-
 
 export function fetchPostIfNeeded(postId) {
   return (dispatch, getState) => {
